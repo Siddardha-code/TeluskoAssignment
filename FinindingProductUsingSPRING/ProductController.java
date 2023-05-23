@@ -1,48 +1,22 @@
-package Telesko.FinindingProductUsingSPRING;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/products")
-public class ProductController {
-    private final ProductService productService;
-
+@Service
+public class ProductService {
     @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private ProductRepository productRepository;
 
-    @PostMapping
-    public void addProduct(@RequestBody Product product) {
-        productService.addProduct(product);
-    }
-
-    @GetMapping
     public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+        return productRepository.findAll();
     }
 
-    @GetMapping("/{place}")
-    public Product getProduct(@PathVariable String place) {
-        return productService.getProduct(place);
+    public List<Product> getProductsWithText(String text) {
+        return productRepository.findByNameContainingIgnoreCase(text);
     }
 
-    @GetMapping("/search/{text}")
-    public List<Product> getProductWithText(@PathVariable String text) {
-        return productService.getProductWithText(text);
-    }
-
-    @GetMapping("/warranty/{year}")
-    public List<Product> getOutOfWarrantyProducts(@PathVariable int year) {
-        return productService.getOutOfWarrantyProducts(year);
-    }
-
-    @GetMapping("/place/{place}")
-    public List<Product> getProductsWithPlace(@PathVariable String place) {
-        return productService.getProductsWithPlace(place);
+    public List<Product> getOutOfWarrantyProducts(int warrantyYear) {
+        return productRepository.findByWarrantyLessThan(warrantyYear);
     }
 }
-
